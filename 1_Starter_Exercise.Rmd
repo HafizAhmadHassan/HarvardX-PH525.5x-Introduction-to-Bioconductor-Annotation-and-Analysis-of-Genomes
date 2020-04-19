@@ -1,0 +1,21 @@
+
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("Hiiragi2013")
+```
+```{r}
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("BSgenome.Hsapiens.UCSC.hg19")
+
+```
+
+```{r}
+library(BSgenome.Hsapiens.UCSC.hg19)
+nchar(Hsapiens$chr16)
+```
+

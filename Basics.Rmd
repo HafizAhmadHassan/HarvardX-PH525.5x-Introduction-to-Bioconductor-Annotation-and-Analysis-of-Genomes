@@ -1,0 +1,46 @@
+
+The material for this week addresses both biological subject matter and computational method.  A series of talks on "what we measure and why" provides basic overviews of molecular biology concepts including basic ideas of DNA replication, chromosomes and DNA variants, gene models and gene expression, and concepts of epigenetics. These talks are punctuated with examples and exercises that illustrate how the main biological concepts are measured, structured, and manipulated and analyzed with R and Bioconductor. 
+
+To get the most out of this course, you should be very familiar with R and Rstudio, and should be able to install and load packages as they are mentioned.  To verify this, try the following in your R session.
+
+```{r}
+ library(Biobase)
+ sessionInfo() 
+
+```
+
+The R version should be 3.4.1 or 3.4.2.  If the library() command above fails, you should perform a basic Bioconductor installation. Do the following:
+
+```{r}
+source("http://www.bioconductor.org/biocLite.R")
+biocLite()
+
+```
+
+
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install(version = "3.10")
+```
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install()
+```
+
+```{r}
+BiocManager::install(c("GenomicFeatures", "AnnotationDbi"))
+
+```
+
+```{r}
+BiocManager::available()
+```
+
+```{r}
+
+library(devtools)
+install_github("genomicsclass/ph525x")
+```
+

@@ -1,0 +1,123 @@
+```{r,eval=FALSE}
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("airway")
+```
+
+
+```{r}
+library(airway)
+```
+
+```{r}
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install(c("Homo.sapiens"))
+```
+```{r}
+library(Homo.sapiens)
+class(Homo.sapiens)
+```
+```{r}
+methods(class=class(Homo.sapiens))
+```
+## Installing Bioconductor
+In order to install Bioconductor, copy the following two lines into your R console.
+This will install the core Bioconductor packages. Further packages can be installed using the biocLite function and specifying a character vector of which packages to install. For example, to install the “affy” and “genefilter” libraries you would type:
+
+```{r}
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install(c("genefilter","geneplotter"))
+```
+```{r}
+library(genefilter)
+```
+
+```{r}
+help.start()
+```
+
+http://genomicsclass.github.io/book/pages/installing_Bioconductor_finding_help.html
+
+# Help Function
+
+```{r}
+?mean
+```
+
+
+```{r}
+example(mad)
+```
+
+```{r}
+help(package="genefilter", help_type="html")
+
+```
+
+
+
+```{r}
+library(geneplotter)
+```
+
+```{r}
+#geneplotter::
+```
+
+
+```{r}
+class(6)
+?numeric
+?"numeric-class"
+
+```
+
+
+
+```{r}
+library(Biobase)
+```
+
+
+
+```{r}
+?ExpressionSet
+?"ExpressionSet-class"
+```
+
+
+
+```{r}
+methods(class="ExpressionSet")
+methods(class="lm")
+
+```
+
+
+
+```{r}
+data(sample.ExpressionSet)
+methods(class=class(sample.ExpressionSet))
+```
+
+```{r}
+vignette(package="Biobase")
+```
+
+```{r}
+vignette("ExpressionSetIntroduction")
+
+```
+
+```{r}
+browseVignettes(package="Biobase")
+```
+
