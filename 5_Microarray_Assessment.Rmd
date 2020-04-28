@@ -1,0 +1,83 @@
+```{r}
+library(tissuesGeneExpression)
+data(tissuesGeneExpression)
+library(SummarizedExperiment)
+tissSE = SummarizedExperiment(list(rma=e))
+colData(tissSE) = DataFrame(tab)
+library(hgu133a.db)
+sym = mapIds(hgu133a.db, keys=rownames(tissSE), column="SYMBOL", keytype="PROBEID")
+nm = mapIds(hgu133a.db, keys=rownames(tissSE), column="GENENAME", keytype="PROBEID")
+rowData(tissSE) = DataFrame(symbol=sym, genename=nm) 
+```
+
+
+
+```{r}
+grep("H2AFX", rowData(tissSE)$symbol, value=TRUE)
+
+```
+
+```{r}
+sum((grep("^H2A", rowData(tissSE)$symbol, value=TRUE)))
+```
+Verify that 205436_s_at is the affymetrix code for H2AFX and then consider the following pl
+```{r}
+
+assay(tissSE["205436_s_at",])
+
+```
+
+```{r}
+par(las=2, mar=c(10,4,2,2))
+boxplot(as.numeric(assay(tissSE["205436_s_at",]))~tissSE$Tissue)
+```
+
+
+
+
+
+```{r}
+par(las=2, mar=c(10,4,2,2))
+boxplot(as.numeric(assay(tissSE["205436_s_at",]))~tissSE$Tissue)
+```
+grepl & grep
+In their most basic form, regular expressions can be used to see whether a pattern exists inside a character string or a vector of character strings. For this purpose, you can use:
+
+grepl(), which returns TRUE when a pattern is found in the corresponding character string.
+grep(), which returns a vector of indices of the character strings that contains the pattern.
+Both functions need a pattern and an x argument, where pattern is the regular expression you want to match for, and the x argument is the character vector from which matches should be sought.
+
+In this and the following exercises, you'll be querying and manipulating a character vector of email addresses! The vector emails has already been defined in the editor on the right so you can begin with the instructions straight away!
+```{r}
+# The emails vector has already been defined for you
+emails <- c("john.doe@ivyleague.edu", "education@world.gov", "dalai.lama@peace.org",
+            "invalid.edu", "quant@bigdatacollege.edu", "cookie.monster@sesame.tv")
+
+# Use grepl() to match for "edu"
+
+grepl('edu',emails)
+# Use grep() to match for "edu", save result to hits
+
+hits<-grep('edu',emails)
+hits
+# Subset emails using hits
+emails[hits]
+
+```
+
+grepl & grep (2)
+You can use the caret, ^, and the dollar sign, $ to match the content located in the start and end of a string, respectively. This could take us one step closer to a correct pattern for matching only the ".edu" email addresses from our list of emails. But there's more that can be added to make the pattern more robust:
+
+@, because a valid email must contain an at-sign.
+.*, which matches any character (.) zero or more times (*). Both the dot and the asterisk are metacharacters. You can use them to match any character between the at-sign and the ".edu" portion of an email address.
+\\.edu$, to match the ".edu" part of the email at the end of the string. The \\ part escapes the dot: it tells R that you want to use the . as an actual character
+```{r}
+
+grep("GAPDH", rowData(tissSE)$symbol, value=TRUE)
+ sum(rowData(tissSE)$symbol=='H2AFX',na.rm=TRUE)
+```
+
+
+
+
+

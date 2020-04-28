@@ -1,0 +1,99 @@
+
+
+```{r}
+
+library(IRanges)
+
+ir <-IRanges(5,10)
+
+ir
+start(ir)
+end(ir)
+width(ir)
+
+```
+
+```{r}
+
+ir <- IRanges(start=c(3,5,17),end=c(10,8,20))
+ir
+ir<-IRanges(5,10)
+```
+
+
+```{r}
+browseVignettes("IRanges")
+```
+
+
+
+```{r}
+IRanges(5,width = 6)
+```
+
+```{r}
+?"intra-range-methods"
+shift(ir,-2)
+```
+
+```{r}
+narrow(ir,start=2)
+```
+relative to 5 end with fifth
+```{r}
+narrow(ir,end=5)
+```
+
+from start which is 5 i need 3 base pairs
+```{r}
+flank(ir,width=3,start=TRUE,both=FALSE)
+```
+
+because end with 10th 3 with basepairs
+```{r}
+flank(ir,width=3,start=FALSE,both=FALSE)
+```
+
+```{r}
+flank(ir,width=3,start = TRUE,both=TRUE)
+```
+
+```{r}
+flank(ir,width=3,start = FALSE,both=TRUE)
+
+```
+
+
+```{r}
+plotir <- function(ir,i){arrows(start(ir)-.5,i,end(ir)+.5,i,code=3,angle=90,lwd=3)}
+plot(0,0,xlim=c(0,15),ylim=c(0,8),type="n",xlab="",ylab="",xaxt="n")
+axis(1,0:15)
+abline(v=0:30+.5,col=rgb(0,0,0,.5))
+
+
+plot(ir,1)
+
+
+polygon(c(start(ir)-.5,start(ir)-.5,end(ir)+.5),c(-1,9,9,-1),col=rgb(1,0,0,.2),border=NA)
+
+plotir(shift(ir,-2),2)
+plotir(narrow(ir,start=2),3)
+plotir(narrow(ir,end=5),4)
+plotir(flank(ir,width=3,start=TRUE,both=FALSE),5)
+plotir(flank(ir,width=3,start=FALSE,both=FALSE),6)
+plotir(flank(ir,width=3,start=FALSE,both=TRUE),6)
+plotir(flank(ir,width=3,start=TRUE,both=TRUE),6)
+
+```
+
+
+```{r}
+
+ir <- IRanges(start=c(3,5,17),end=c(10,8,20))
+
+range(ir)
+reduce(ir)
+gaps(ir)
+disjoin(ir)
+```
+

@@ -1,0 +1,138 @@
+```{r}
+library(Biobase)
+library(genefu)
+data(nkis)
+dim(demo.nkis)
+head(demo.nkis)[,1:8]
+
+```
+
+```{r}
+nkes = ExpressionSet(assayData=data.nkis)
+```
+
+
+```{r}
+head(data.nkis)[1:5,1:5]
+```
+```{r}
+head(annot.nkis)[1:5,1:5]
+```
+
+```{r}
+head(rownames(annot.nkis))
+
+head(annot.nkis$probe)
+```
+
+```{r}
+head(rownames(demo.nkis))
+```
+
+```{r}
+head(demo.nkis)
+```
+
+```{r}
+# setup Bioconductor
+library(GEOquery)
+# retrieve the LSC data from GEO
+lstem = getGEO("GSE3725")
+```
+```{r}
+class(lstem)
+```
+
+
+```{r}
+lstem = lstem[[1]]
+```
+
+
+```{r}
+dim(lstem)
+```
+
+
+
+```{r}
+ pData(lstem)$title 
+
+```
+```{r}
+lstem = lstem[, -c(1:6)] # note position of comma!
+
+```
+
+```{r}
+length(which[pData(lstem)$title=="GMP"])
+```
+```{r}
+which(lstem$title)
+```
+```{r}
+
+length(grep("L-GMP", pData(lstem)$title, value=TRUE))
+
+```
+
+```{r}
+exprs(lstem)
+```
+
+
+```{r}
+## perform an elementary normalization
+ee = exprs(lstem)
+ee[ee<0] = 0 
+eee = log(ee+1)
+## boxplot(data.frame(eee))
+meds = apply(eee,2,median)
+tt = t(t(eee)-meds)
+## boxplot(data.frame(tt))
+## assign the normalized values to ExpressionSet
+exprs(lstem) = tt
+```
+
+```{r}
+
+exprs(lstem)
+```
+
+```{r}
+# simplify downstream labeling with gene symbol
+featureNames(lstem) = make.names(fData(lstem)$"Gene Symbol", unique=TRUE)
+```
+
+
+```{r}
+  # reformat the naming of cell types
+ct = pData(lstem)[,1]
+ct = as.character(ct)
+cct = gsub(".*(\\(.*\\)).*", "\\1", ct) 
+cct = make.unique(cct)
+cct = gsub(" enriched", "", cct)
+# use the cell types as sample names
+sampleNames(lstem) = cct
+```
+
+```{r}
+ # select some members of the stem cell signature
+inds = which(fData(lstem)$"Gene Symbol" %in% c("Stat1", "Col4a1", "Hoxa9", "Itgb5"))
+  
+```
+
+
+
+
+```{r}
+# obtain a simple heatmap
+heatmap(exprs(lstem[inds,]), Colv=NA)
+
+```
+```{r}
+
+which(rownames(fData(lstem)) %in% c("Stat1", "Col4a1", "Hoxa9", "Itgb5"))
+
+```
+
