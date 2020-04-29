@@ -1,0 +1,23 @@
+```{r}
+library(ERBS)
+data(HepG2)  # cell line of liver origin
+data(GM12878)  # immortalized B cell
+HepG2
+```
+
+```{r}
+median(HepG2$signalValue)
+```
+```{r}
+seqn
+```
+
+```{r}
+table(seqnames(HepG2))
+```
+
+
+```{r}
+sum(HepG2[table(seqnames(HepG2))=="chr16"])
+```
+

@@ -1,0 +1,131 @@
+Assessment: GRanges
+ Bookmark this page
+Q1: Understanding strand orientation with resize
+1 point possible (graded)
+In the first week, in the subsection "What We Measure and Why", we learned that DNA has two strands. These two strands are often called plus, "+", and minus, "-".
+
+The GRanges object in the GenomicRanges package extends the concept of interval ranges in two major ways. The ranges are now also identified by:
+
+1. the chromosome we are referring to (in Bioconductor, this is called "seqnames")
+
+2. the strand of the DNA we are referring to ("+" or "-"). No strand is labelled with a star, "*".
+
+Without these two pieces of information, a specification of a range of DNA would be ambiguous. Let's make two ranges, with strand and chromosome information, and see how the range operations act based on strand.
+
+
+```{r}
+x = GRanges("chr1", IRanges(c(1,101),c(50,150)), strand=c("+","-"))
+
+```
+
+
+In the last assessment, we visualized IRanges with the plotRanges() function in the ph525x library. We can get the internal IRanges from a GRanges object with the following code:
+```{r}
+
+ranges(x)
+
+```
+
+
+```{r}
+library(GenomicRanges)
+
+plotGRanges = function(x) plotGRanges(ranges(x))
+
+
+```
+
+
+```{r}
+plotGRanges(x)
+```
+
+```{r}
+resize(x,1)
+```
+
+Suppose we have two different sets of ranges, which overlap somewhat but not entirely. This is the case for many genes, in which there are different versions of transcripts, also called isoforms. The different transcripts consist of exons which end up in the final mRNA molecule, and a number of transcripts can share exons or have exons which are overlapping but not identical ranges.
+
+We'll start with a toy example, and learn how to load real genes later:
+
+```{r}
+x = GRanges("chr1", IRanges(c(101,201,401,501),c(150,250,450,550)), strand="+")
+y = GRanges("chr1", IRanges(c(101,221,301,401,541),c(150,250,350,470,550)), strand="+")
+```
+Plot these two sets of ranges using par(mfrow=c(2,1)) and two calls to plotGRanges.
+
+If we want to keep the information about which set the ranges belong to, we could combine the two GRanges into a GRangesList:
+
+```{r}
+GRangesList(x,y)
+
+```
+However, if we want to combine them into a single GRanges, we can use c():
+
+```{r}
+subsetByOverlaps(x, y)
+
+```
+
+```{r}
+c(x,y)
+
+
+```
+
+
+```{r}
+abs(start(ranges(disjoin(c(x,y))))-start(ranges(c(x,y))))
+```
+
+```{r}
+
+sum(width(x))+sum(width(y))-sum(width(ranges(disjoin(c(x,y)))))
+```
+
+What is the total width which is in x or y but not in both?
+
+
+```{r}
+sum(width(disjoin(c(x,y))))
+```
+
+```{r}
+disjoined = disjoin(c(x,y))
+
+
+```
+f <- function(x) length( intersect(seq(x[1],x[2],1), seq(x[3],x[4],1)) )
+
+```{r}
+
+sum(width(x))+sum(width(y))-sum(width(ranges(intersect(x,y))))
+
+
+
+```
+Define a new genomic range, z, which covers range(ranges(x)) but has the opposite strand.
+
+What is the number of ranges in x which overlap z according to the %over% command?
+
+```{r}
+ranges(x)
+```
+
+```{r}
+dis = disjoin(c(x,y))
+both = dis %over% x & dis %over% y
+sum(width(dis[both]))
+```
+
+```{r}
+not =! (dis %over% x & dis %over% y)
+sum(width(dis[not]))
+
+```
+
+```{r}
+z = GRanges("chr1", IRanges(c(101,201,401,501),c(150,250,450,550)), strand="-")
+sum(x %over% z)
+```
+

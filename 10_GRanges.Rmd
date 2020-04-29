@@ -1,0 +1,276 @@
+```{r}
+library(GenomicRanges)
+```
+
+```{r}
+gr<-GRanges("chrZ", IRanges(start=c(5,10),end=c(35,45)),strand="+",seqlengths=c(chrZ=100L))
+
+gr
+
+shift(gr,10)
+
+
+
+
+```
+```{r}
+
+shift(gr,80)
+```
+
+
+just make sure it not goes over 100 used trim
+```{r}
+trim(shift(gr,80))
+```
+
+
+meta column
+```{r}
+mcols(gr) 
+```
+
+```{r}
+mcols(gr)$value <- c(-1,4)
+```
+
+
+```{r}
+gr
+```
+
+GRANGES LIST
+
+```{r}
+gr2 <- GRanges("chrZ",IRanges(11:13,51:53))
+
+mcols(gr)$value <-NULL
+grl<-GRangesList(gr,gr2)
+
+length(grl)
+grl[[1]]
+mcols(grl)$value<- c(5,7)
+grl
+mcols(grl)
+
+```
+
+
+
+```{r}
+
+gr1 <-GRanges("chrZ",IRanges(c(1,11,21,31,41),width=5))
+gr2 <-GRanges("chrZ",IRanges(c(19,33),c(38,35)))
+
+fo<-findOverlaps(gr1,gr2)
+```
+
+3rd element of gr1 overlap with 1st element of gr2
+```{r}
+fo
+
+```
+
+
+
+
+```{r}
+queryHits(fo)
+```
+
+```{r}
+subjectHits(fo)
+```
+
+
+logical vector of gr1 with hits 3rd 4th will true
+
+```{r}
+gr1 %over% gr2
+```
+
+```{r}
+gr1[gr1 %over% gr2]
+```
+Rle and Views
+
+```{r}
+r<- Rle(c(1,1,1,0,0,-2,-2,-2,rep(-1,20)))
+r
+
+
+```
+another representation
+```{r}
+str(r)
+```
+
+
+```{r}
+
+as.numeric(r)
+
+```
+
+
+```{r}
+as.numeric(unlist(r))
+
+```
+
+combined with Granges
+```{r}
+Views(r,start=c(4,2),end=c(7,6))
+
+```
+
+
+
+---
+title: "Estrogen receptor binding: data representation and location analysis"
+author: "Vince and Rafa"
+date: "March 19, 2015"
+output: html_document
+layout: page
+toc: yes
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+```{r setup,echo=FALSE,results="hide",message=FALSE}
+library(GenomicFeatures)
+library(GenomicRanges)
+library(IRanges)
+```
+
+# Introduction: Interval data on ER binding
+
+A 2006 Nature Genetics paper (v38, n11) by Carroll, Meyer, Song et al.
+describes the notion that a group of genes
+whose expression correlates 
+with the expression of the estrogen receptor (ER) gene
+forms a signature of a breast cancer subtype
+called "luminal".  This finding motivates interest in determining
+the set of all genomic elements to which ER binds, and this has
+been carried out using ChIP-seq experiments.  An important 
+finding of the Carroll et al. paper was that ER binding 
+in the MCF-7 cell line occurred only rarely promoter-proximal regions.
+This study therefore unearthed previously unexplored 
+cis-regulatory sites.
+
+We will show how to relate binding peak locations to gene
+transcription start sites in two cell lines analyzed in the
+ENCODE project.
+
+# Acquisition of binding data
+
+The examples shown here are reported binding sites for estrogen related receptor binding sites derinved from ChIPSeq experiments on two of the main cell lines used by ENCODE: HepG2 and GM12878. In this section we focus on the analysis that comes after the genomic regions are defined. These data can be found as NarrowPeak files on the public repositories but we have created a R package with `GRanges` objects already created. If you have not done so already you can install it like this:
+
+# Genomic Ranges tools
+
+Before we continue on to finding gene near our binding sites we are going to construct a consensus `GRanges`. Specifically, we are going to construct an object represnenting the regions that are reported for both cell lines. We can easily find these regions using the `findOverlaps` function:
+
+```{r}
+res = findOverlaps(HepG2,GM12878)
+res
+```
+ 
+ TO BE CONTINUED
+
+```{r}
+erbs = HepG2[queryHits(res)]
+erbs = granges(erbs)
+```
+
+
+# Acquisition of gene transcription start sites
+
+We can use Homo.sapiens:
+
+```{r geths}
+library(Homo.sapiens)
+ghs = genes(Homo.sapiens)
+ghs
+```
+
+Explain genes have direction and what is a transcription start site
+
+```{r}
+tssgr = resize(ghs,1)
+granges(ghs)[1:3,]
+granges(tssgr)[1:3,]
+```
+
+
+```{r}
+index <- precede(HepG2,ghs)
+HepG2[1:3,]
+granges(HepG2)[1:3,]
+granges(ghs)[index[1:3],]
+d = distance(HepG2,ghs[index])
+```
+
+If we want the closest to a start site, regardless of befor or after, for example if overlaps. We want something different.
+
+We can create a granges of TSS like this:
+
+```{r}
+tssgr = resize(ghs,1)
+```
+
+
+# Finding nearest gene for each binding event
+
+The distanceToNearest function from GenomicFeatures will
+create a Hits object with metadata giving the positive distance
+between peak location and nearest TSS.  We'll discuss the Hits
+object in the video.
+
+```{r donear}
+d = distanceToNearest(HepG2, tssgr)
+d
+##note this gives an error
+try(d[,3])
+###instead we have to do this
+dists = values(d)$distance
+```
+
+We will call a distance negative if the peak is 5' to the nearest TSS.
+The density estimate given below shows that the vast majority of
+events are remote from the 1kb region around TSS; we use dashed
+lines to denote that region.
+
+```{r getsi,fig=TRUE}
+index = subjectHits(d)
+sdists = ifelse(end(HepG2) < start(tssgr[index]), dists, -dists)
+hist(sdists, xlim=c(-100000,100000), main="Density of d(ER binding peak, nearest TSS)" ,breaks=seq(min(sdists),max(sdists),len=1000))
+abline(v=-c(10000,10000), lty=2)
+```
+
+## Getting information about genes
+
+# Annotating genes
+
+Get information on genes
+
+```{r}
+index <- subjectHits(d)[dists<1000]
+dists = values(d)$distance
+##better way to do this?
+geneids <- mcols(tssgr[index])$GENEID
+```
+
+```{r geths2}
+library(Homo.sapiens)
+?select
+columns(Homo.sapiens)
+keytypes(Homo.sapiens)
+geneids <- as.character(geneids)
+select(Homo.sapiens,keys=geneids,columns="GENENAME",keytype="GENEID")
+```
+
+
+
