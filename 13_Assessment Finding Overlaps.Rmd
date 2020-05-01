@@ -1,0 +1,102 @@
+
+
+```{r}
+library(ERBS)
+data(HepG2)
+data(GM12878)
+res = findOverlaps(HepG2,GM12878)
+erbs = HepG2[queryHits(res)]
+
+
+```
+Indexing individual ranges
+Where does the 17th HepG2 region start?
+
+```{r}
+HepG2[17,]
+```
+
+
+```{r}
+x<-distanceToNearest(GM12878,HepG2[17,])
+
+x          
+
+```
+
+```{r}
+
+min()
+
+m<-which(mcols(x)$distance==min(mcols(x)$distance))
+```
+
+
+#Hassan bht achay  ho Ap
+```{r}
+GM12878[queryHits(x[m,]),]
+```
+
+Q3: Measuring distance between closest regions
+1/1 point (graded)
+What is the distance between the 17th region of HepG2 and its closest region in GM12878?
+
+
+
+
+```{r}
+
+min(mcols(x)$distance)
+```
+
+
+Q4: Summarizing proximities of nearest regions in a pair of GRanges
+1 point possible (graded)
+For each region in HepG2 find the closest region in GM12878 and record the distance.
+
+What proportion of these distances are smaller than 2000 base pairs?
+Distance is a metadata column on the Hits object, so consider using mcols().
+```{r}
+length(HepG2)
+```
+
+
+```{r}
+st<-0
+
+for(i in 1:length(HepG2)){
+  x<-distanceToNearest(HepG2[i,],GM12878)
+  
+    st[i]<-min(mcols(x)$distance)
+}
+sum(st<2000)/length(st)
+```
+
+another
+```{r}
+d = distanceToNearest(HepG2,GM12878)
+mean(mcols(d)$distance < 2000)
+```
+
+
+
+
+
+```{r}
+order(erbs)
+```
+
+
+
+```{r}
+erbs = granges(erbs)
+erbs[order(erbs),]
+
+```
+
+```{r}
+erbs2= intersect(HepG2,GM12878)
+erbs2[order(erbs2),]
+
+```
+

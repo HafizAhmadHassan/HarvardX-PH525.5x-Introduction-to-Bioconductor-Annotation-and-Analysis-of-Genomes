@@ -1,0 +1,125 @@
+```{r}
+library(GenomicRanges)
+```
+
+```{r}
+gr<-GRanges("chrZ", IRanges(start=c(5,10),end=c(35,45)),strand="+",seqlengths=c(chrZ=100L))
+
+gr
+
+shift(gr,10)
+
+```
+
+
+```{r}
+
+shift(gr,80)
+```
+
+
+just make sure it not goes over 100 used trim
+```{r}
+trim(shift(gr,80))
+```
+
+
+meta column
+```{r}
+mcols(gr) 
+```
+
+```{r}
+mcols(gr)$value <- c(-1,4)
+```
+
+
+```{r}
+gr
+```
+
+GRANGES LIST
+
+```{r}
+gr2 <- GRanges("chrZ",IRanges(11:13,51:53))
+
+mcols(gr)$value <-NULL
+grl<-GRangesList(gr,gr2)
+
+length(grl)
+grl[[1]]
+mcols(grl)$value<- c(5,7)
+grl
+mcols(grl)
+
+```
+
+
+
+```{r}
+
+gr1 <-GRanges("chrZ",IRanges(c(1,11,21,31,41),width=5))
+gr2 <-GRanges("chrZ",IRanges(c(19,33),c(38,35)))
+
+fo<-findOverlaps(gr1,gr2)
+```
+
+3rd element of gr1 overlap with 1st element of gr2
+```{r}
+fo
+
+```
+
+
+
+
+```{r}
+queryHits(fo)
+```
+
+```{r}
+subjectHits(fo)
+```
+
+
+logical vector of gr1 with hits 3rd 4th will true
+
+```{r}
+gr1 %over% gr2
+```
+
+```{r}
+gr1[gr1 %over% gr2]
+```
+Rle and Views
+
+```{r}
+r<- Rle(c(1,1,1,0,0,-2,-2,-2,rep(-1,20)))
+r
+
+
+```
+another representation
+```{r}
+str(r)
+```
+
+
+```{r}
+
+as.numeric(r)
+
+```
+
+
+```{r}
+as.numeric(unlist(r))
+
+```
+
+combined with Granges
+```{r}
+Views(r,start=c(4,2),end=c(7,6))
+
+```
+

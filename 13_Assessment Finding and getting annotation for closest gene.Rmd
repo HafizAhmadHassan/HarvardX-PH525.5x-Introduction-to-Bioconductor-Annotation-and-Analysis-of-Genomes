@@ -1,0 +1,31 @@
+
+
+```{r}
+library(ERBS)
+data(HepG2)
+data(GM12878)
+res = findOverlaps(HepG2,GM12878)
+erbs = HepG2[queryHits(res)]
+
+
+```
+
+
+```{r}
+order(erbs)
+```
+
+
+
+```{r}
+erbs = granges(erbs)
+erbs[order(erbs),]
+
+```
+
+```{r}
+erbs2= intersect(HepG2,GM12878)
+erbs2[order(erbs2),]
+
+```
+

@@ -1,0 +1,38 @@
+## before video, run code from previous video AND these commands:
+
+
+```{r}
+res = findOverlaps(HepG2,GM12878)
+erbs = HepG2[queryHits(res)]
+erbs = granges(erbs)
+
+```
+
+# define human genes
+
+```{r}
+library(Homo.sapiens)
+ghs = genes(Homo.sapiens)
+ghs
+
+```
+
+# learn about the precede function (and related functions like follow)
+
+```{r}
+?precede
+
+```
+
+# for each range in erbs, find the closest preceding range in ghs
+
+329145 is closest and preceds 361308
+
+20335787 is closest and preceds 20251789 (-negative)
+```{r}
+index = precede(erbs, ghs)
+ghs[index[1:3]]
+erbs[1:3]    # note result is strand-aware
+
+```
+
