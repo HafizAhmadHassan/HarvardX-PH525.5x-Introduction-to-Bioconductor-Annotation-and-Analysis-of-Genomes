@@ -1,0 +1,100 @@
+
+
+```{r}
+library(Biostrings)
+```
+
+
+```{r}
+eco <- DNAString("GGTTTCACCGCCGGTAATGAAAAAGGCGAACTGGTGGTGCTTGGACGCAACGGTTCCGACTACTCTGCTGCGGTGCTGGCTGCCTGTTTACGCGCCGATTGTTGCGAGATTTGGACGGACGTTGACGGGGTCTATACCTGCGACCCGCGTCAGGTGCCCGATGCGAGGTTGTTGAAGTCGA")
+
+eco
+```
+
+Q1: Number of bases in DNAString
+1 point possible (graded)
+How many bases are in eco?
+```{r}
+length(eco)
+```
+Q2: Counting occurrences of a pattern
+1/1 point (graded)
+In DNA, the start codon is encoded by the trinucleotide ATG.
+
+How many potential start codons are in the eco sequence?
+
+```{r}
+countPattern("ATG",eco)
+```
+
+Q3: Location of a pattern
+1 point possible (graded)
+Find the locations of these ATG trinucleotides.
+
+What is the start location of the first ATG?
+
+```{r}
+matchPattern("ATG",eco)
+
+```
+
+
+Q4: Subsetting and translation
+1 point possible (graded)
+Take the substring of eco that starts at the location found in the previous question. Translate this sequence into amino acids.
+
+How long is the resulting AAString?
+
+
+```{r}
+AA<-translate(eco[start(matchPattern("ATG",eco))[1]:length(eco)])
+
+
+```
+
+
+```{r}
+matchPattern("*",translate(eco[start(matchPattern("ATG",eco))[1]:length(eco)]))
+
+```
+
+Q6: Sequence of AAString
+2 points possible (graded)
+Subset the AAString to end just before the stop codon; that is, do not include the stop codon or anything following it in the AAString.
+
+How many amino acids are in the resulting AAString?
+
+
+
+```{r}
+
+AA[1:start(matchPattern("*",translate(eco[start(matchPattern("ATG",eco))[1]:length(eco)])))-1]
+```
+
+
+Q7: Amino acid frequencies and net charge
+0.0/3.0 points (graded)
+At pH 7, two amino acids are negatively charged (D, E) and three amino acids are positively charged (H, K, R). Assume this peptide is at pH 7. The net charge of a peptide is the number of positively charged amino acids minus the number of negatively charged amino acids.
+
+
+
+How many positively charged amino acids are in the sequence?
+```{r}
+letterFrequency(AA,"DE")
+
+```
+
+How many negatively charged amino acids are in the sequence?
+```{r}
+letterFrequency(AA,"R")
+
+```
+
+What is the net charge of this peptide at pH 7?
+
+```{r}
+
+```
+
+
+

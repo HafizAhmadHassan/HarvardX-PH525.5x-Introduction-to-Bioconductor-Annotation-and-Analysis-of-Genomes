@@ -1,0 +1,65 @@
+#Let's bring in the ERBS package and take data HepG2-- remind ourselves
+#that HepG2 is a GRanges telling us where ChIP-seq experiments have identified
+#locations where the estrogen receptor nuclear protein will bind.
+#What we'd like to do is check on the occurrence of a certain short sequence
+#called the binding motif in the genomic sequence
+#over which these binding peaks are found.
+
+library(ERBS)
+data(HepG2)
+HepG2
+
+# load and inspect human reference genome
+library(BSgenome.Hsapiens.UCSC.hg19)
+Hsapiens
+
+# extract chromosome 17 sequence
+c17 = Hsapiens$chr17
+c17
+
+So whenever you feel like looking up the sequence of some genomic feature--
+it could be a microarray probe or a binding motif
+or a short-read-- you could, in principle, take your string
+and match it against this DNAString.
+
+
+?getSeq
+class(Hsapiens)
+showMethods("getSeq")
+
+# collection of DNA strings with ChIP-seq binding 
+# Remember that the length of HepG2 is 303.
+# So what we have here is a collection of DNAStrings, one
+# for each of the binding peaks.
+
+hepseq = getSeq(Hsapiens, HepG2)
+length(HepG2)    # same number of sequences
+width(HepG2)[1:5]    # widths match
+
+
+
+# So now we are going to look up the coincidence of a certain motif.
+# It could be an octamer, it could be a hexamer
+# depending on the type of protein that's binding the type of organism
+# collection of shifted DNA strings with no relationship to binding sequences ER protien - essentially random
+rhepseq = getSeq(Hsapiens, shift(hepG2, 2500))
+
+# count occurrences of a motif in DNA sequencesFor each one of the strings in hepseq, I get
+# a count of the number of times the motif occurs.
+mot = "TCAAGGTCA"
+?vmatchPattern
+vcountPattern(mot, hepseq)
+
+# consider both forward matches and reverse complement matches 
+sum(vcountPattern(mot, hepseq))    # forward pattern match
+sum(vcountPattern(mot, reverseComplement(hepseq)))    # reverse pattern match
+
+## compare motif occurrence in binding peak to random upstream sequences
+# count of motifs in binding peaks
+sum(vcountPattern(mot, hepseq)) +
+  sum(vcountPattern(mot, reverseComplement(hepseq)))
+# count of motifs in randomly selected regions of equal length
+sum(vcountPattern(mot, rhepseq)) +
+  sum(vcountPattern(mot, reverseComplement(rhepseq)))
+
+# for real analysis, use MotifDb package, probabilistic binding packages like MEME and FIMO

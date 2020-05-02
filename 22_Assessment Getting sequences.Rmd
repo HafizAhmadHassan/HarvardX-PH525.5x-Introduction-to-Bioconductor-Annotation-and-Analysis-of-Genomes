@@ -1,0 +1,40 @@
+```{r}
+library(ERBS)
+library(GenomicRanges)
+data(HepG2)
+data(GM12878)
+res = findOverlaps(HepG2,GM12878)
+erbs = HepG2[queryHits(res)]
+erbs = granges(erbs)
+```
+
+```{r}
+erbs
+```
+
+
+
+
+```{r}
+library(stringr)
+library(BSgenome.Hsapiens.UCSC.hg19)
+
+erbseq=getSeq(Hsapiens,erbs)
+seqs=1:75
+props<-function (x) {(str_count(as.character(erbseq[[x]]),"C")+
+                    str_count(as.character(erbseq[[x]]),"G"))/length(erbseq[[x]])
+    }
+meds<-sapply(seqs,props)
+median(meds)
+```
+
+
+```{r}
+control = shift(erbs,10000)
+controlseqs = getSeq(Hsapiens,control)
+gc = alphabetFrequency(controlseqs)[,2:3]
+n = width(control)
+controlgccontent = rowSums(gc)/n
+median(controlgccontent)
+```
+
