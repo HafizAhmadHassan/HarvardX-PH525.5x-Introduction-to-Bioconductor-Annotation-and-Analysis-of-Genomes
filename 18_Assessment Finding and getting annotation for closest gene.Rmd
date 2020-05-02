@@ -1,0 +1,54 @@
+
+
+
+```{r}
+library(Homo.sapiens)
+ghs = genes(Homo.sapiens)
+```
+and what you learned in the video, convert the ghs object to one that represents just the tss
+
+What is the TSS (Transcription Start Site) of the gene with ID: 100113402?
+Hint: look at the ghs in the console. Note that the names of the ranges are the same as the GENEID column, so you can index the ranges directly with "100113402".
+
+```{r}
+tss <- resize(ghs,1)
+start(tss["100113402"])
+```
+What is the GENEID of the gene with TSS closest to the 4th region of erbs?
+Hint: Use the nearest() function.
+
+```{r}
+
+library(ERBS)
+data(HepG2)
+data(GM12878)
+res = findOverlaps(HepG2,GM12878)
+erbs = HepG2[queryHits(res)]
+erbs = granges(erbs)
+distanceToNearest(erbs[4,], tss)
+
+values(tss[6316,])$GENEID
+
+keytypes(Homo.sapiens)
+keys = as.character(values(tss[6316,])$GENEID)
+columns(Homo.sapiens)
+res = select(Homo.sapiens, keys = keys,
+             columns = c("SYMBOL", "ENTREZID"), keytype="GENEID")
+res
+
+```
+
+
+
+
+
+```{r}
+library(Homo.sapiens)
+ghs = genes(Homo.sapiens)
+tssgr= resize(ghs,1)
+i = nearest(erbs[4],tssgr)
+gene<-as.character(values(tssgr[i])$GENEID)
+res=select(Homo.sapiens,key=gene,keytype="GENEID",column="SYMBOL")
+res
+```
+
