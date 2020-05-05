@@ -1,0 +1,65 @@
+```{r}
+library(GSE5859Subset)
+data(GSE5859Subset)
+dim(geneExpression)
+dim(sampleInfo)
+dim(geneAnnotation)
+```
+
+Question 2
+1 point possible (graded)
+The geneExpression object contains the microarray measurements, sampleInfo provides sample information and geneAnnotation provides feature information. Read the help file for the ExpressionSet class and determine which of the following best describes the best way to use the data in this context:
+```{r}
+geneExpression will be the assayData, sampleInfo will be the phenoData, and expressionAnnotation will be the featureData
+```
+
+However, we only know these are the correct columns/rows to check because the data creator (in this case the instructor) told us so. In the ExpressionSet object we assure this connection is established by forcing the rownames of the assayData to match the rownames of featureData and the the colnames of assayData to match the rownames of phenoData.
+
+Now lets create the objects we will use in phenoData slot by applying the AnnotatedDataFrame function to the appropriate table. Call this object pd, make sure to give it rownames that match the colnames of geneExpression
+
+```{r}
+library(Biobase)
+library(GEOquery)
+pd = AnnotatedDataFrame(sampleInfo)
+rownames(pd) = colnames(geneExpression)
+pd = pd[, colnames(pd)!="filename"] ##redundant
+pData(pd)["GSM136530.CEL.gz","date"]
+
+
+```
+
+```{r}
+varLabels(pd)
+
+```
+Note that the ExpressionSet class has a slot for storing a table describing the features (rows). In our example, annotations for the features are included in the geneAnnotation object. Here we will create an AnnotatedDataFrame version of geneAnnotation to add to the featureData slot of an ExpressionSet at a later step. Use the AnnotatedDataFrame function to create and object fd. Make sure the rownames() match the rownames() of geneExpression.
+
+After creating this object, run the command:
+
+pData(fd)["204810_s_at", "CHR"]
+What chromosome is this gene from?
+Give your answer in this form: chrZ
+```{r}
+fd = AnnotatedDataFrame(geneAnnotation)
+rownames(fd) = rownames(geneExpression)
+pData(fd)["204810_s_at", "CHR"]
+
+
+```
+Now we are ready to create our ExpressionSet object. To do this we simply call the ExpressionSet() function on the geneExpression, pd and fd objects. The latter two were created in question 3.3.2. Call the new object eset.
+
+After creating eset, run the following lines to explore the expression difference on the Y chromosome in males versus females.
+
+
+```{r}
+eset = ExpressionSet(geneExpression,phenoData = pd,featureData = fd)
+
+ind1 <- which(featureData(eset)$CHR == "chrY")
+ind2 <- pData(eset)$group == 1
+femaleY <- colMeans(exprs(eset)[ind1, ind2]) 
+maleY <- colMeans(exprs(eset)[ind1, !ind2]) 
+boxplot(maleY, femaleY)
+median(maleY) - median(femaleY)
+```
+
+

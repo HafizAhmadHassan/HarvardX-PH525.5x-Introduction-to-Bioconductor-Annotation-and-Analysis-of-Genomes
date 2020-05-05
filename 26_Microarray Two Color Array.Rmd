@@ -1,0 +1,29 @@
+```{r}
+library(limma)
+```
+
+```{r}
+ # datadir defined in previous video
+library(rafalib)
+
+wd <- getwd()
+datadir <- paste0(wd, "/rawdata-master")
+basedir <- paste0(datadir, "/agilent")
+
+setwd(basedir)
+targets <- readTargets(file.path(basedir,"TargetBeta7.txt"))
+targets$FileNames
+RG <- read.maimages(file.path(basedir,targets$FileName), source="genepix")
+
+MA <- MA.RG(RG,bc.method="none")
+dim(RG$R)
+dim(RG$G)
+dim(MA$M)
+dim(MA$A)
+plot(MA$A[,1], MA$M[,1])    # MA plot for first sample
+
+# microarray image
+mypar(1,1)
+imageplot(MA$M[,2], RG$printer, zlim=c(-3,3))
+```
+
