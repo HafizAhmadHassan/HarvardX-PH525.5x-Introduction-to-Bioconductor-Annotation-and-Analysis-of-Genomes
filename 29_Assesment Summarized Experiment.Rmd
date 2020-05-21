@@ -1,0 +1,276 @@
+Explore a SummarizedExperiment object and practice accessing and manipulating data from various components of the object. To complete this assessment, install and load the airway package. This package contains a SummarizedExperiment object called airway containing RNA-seq data from untreated and steroid-treated airway smooth muscle cell lines.
+
+
+```{r}
+library(airway)
+data(airway)
+airway    # SummarizedExperiment object
+
+
+```
+
+
+Q1: Metadata
+0.0/1.0 point (graded)
+Inspect the metadata for the airway dataset.
+```{r}
+metadata(airway)
+```
+
+What is the PubMed ID (PMID) for the original paper supplying these data?
+
+```{r}
+24926665
+```
+
+
+
+Some problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+
+Save Save Your Answer
+Q2: Number of features and samples
+0.0/2.0 points (graded)
+Inspect the dimensions of the airway dataset.
+
+
+```{r}
+dim(airway)
+```
+
+How many features are in the dataset?
+  unanswered 
+```{r}
+length(rowRanges(airway))
+```
+
+How many samples are in the dataset?
+
+
+```{r}
+length(colData(airway))
+```
+
+
+Save Save Your Answer
+Q3: Sample data
+0.0/3.0 points (graded)
+Explore the sample metadata for the airway dataset. The columns of the metadata table are given informative abbreviated names, but their exact meaning needs to be inferred.
+```{r}
+names(colData(airway))
+```
+```{r}
+which(colnames(airway)=="SRR1039509")
+```
+
+
+Which cell line is associated with sample SRR1039509?
+
+```{r}
+
+colData(airway)[which(airway$Run=="SRR1039509"),]$cell
+
+
+```
+
+
+What is the name of the metadata column specifying whether the sample was treated with dexamethasone (a steroid)?
+
+```{r}
+colData(airway)[which((colData(airway))$avgLength==min(colData(airway)$avgLength)),]
+
+```
+
+Which sample (column name) has the shortest average read length?
+  
+```{r}
+ min((colData(airway))$avgLength)
+
+```
+
+Q4: Feature data
+
+Explore the feature metadata for the airway dataset.
+
+
+
+Each feature (row) in the dataset corresponds to a single gene. How many genes are in the dataset?
+
+```{r}
+length(rowRanges(airway))
+```
+
+
+ 
+The row metadata for the airway object include GRanges specifying the exon boundaries for each gene. How many exons are in the 100th gene?
+  unanswered 
+```{r}
+
+length(rowRanges(airway)[[100]])
+
+```
+
+
+Save Save Your Answer
+Q5: Exploring a particular feature with GRanges
+0.0/3.0 points (graded)
+Use GRanges operations to explore properties of the 100th gene in the dataset.
+```{r}
+sum(width(ranges(rowRanges(airway)[[100]])))
+```
+
+On which chromosome is the 100th gene?
+  unanswered 
+```{r}
+7
+```
+
+
+```{r}
+ir<-rowRanges(airway)[100]
+```
+
+
+```{r}
+width(range(rowRanges(airway)[[100]]))
+
+```
+
+
+How many bases long is the 100th gene (including introns)?
+exclude overlapping ranges the calculate width Nice..
+```{r}
+intersect(ranges(ir))
+```
+
+```{r}
+ir[ir %over% ir]
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+sum(seqlengths(rowRanges(airway)[[100]]))
+```
+```{r}
+sum(width(reduce(ranges(ir))))
+
+```
+
+```{r}
+
+width(range(reduce(ranges(ir))))
+```
+
+
+TRUE including introns
+
+```{r}
+width(range(rowRanges(airway)[[100]]))
+```
+
+
+What is the transcription start site (TSS) of the 100th gene?
+
+```{r}
+ir2 <- sort(ranges(ir))
+ir2
+
+
+```
+
+```{r}
+start(resize(ir2,1))[[1]]
+```
+
+
+```{r}
+```
+
+```{r}
+resize(range(rowRanges(airway)[[100]]), 1)
+
+```
+
+
+Save Save Your Answer
+Q6: Assay information for a specific feature
+0.0/4.0 points (graded)
+Consider the gene with ENSEMBL ID "ENSG00000103196".
+```{r}
+mean(assay(airway)[(rownames(assay(airway))=="ENSG00000103196")])
+```
+
+
+What is the mean expression level of this gene across all samples?
+
+```{r}
+mean(assay(airway)[(rownames(assay(airway))=="ENSG00000103196")])
+
+```
+
+What is the mean expression level of this gene in samples treated with dexamethasone?
+Use which() on the sample information table to identfy which samples have the dexamethasone status "trt".
+
+
+```{r}
+head(assay(airway))
+```
+
+```{r}
+```
+
+```{r}
+x<-sum(assay(airway[,which(colData(airway)$dex=="trt")]))
+```
+
+
+```{r}
+y<-ncol(assay(airway[,which(colData(airway)$dex=="trt")]))*nrow(assay(airway[,which(colData(airway)$dex=="trt")]))
+```
+
+```{r}
+x/y
+```
+
+```{r}
+
+head(assay(airway))
+```
+
+
+```{r}
+colData(airway)
+```
+
+
+
+
+
+```{r}
+colData(airway)
+```
+```{r}
+head(assay(airway)[1,])
+```
+
+
+What is the mean expression level of this gene in untreated control samples?
+Use which() on the sample information table to identfy which samples have the dexamethasone status "untrt".
+
+```{r}
+sum(colSums(assay(airway[,which(colData(airway)$dex=="trt")])))/y
+
+```
+
+What is the log (base 2) ratio of mean expression of this gene between treated and untreated samples?
+  unanswered 
+  
+```{r}
+log2(335.2284/349.2917)
+```
+

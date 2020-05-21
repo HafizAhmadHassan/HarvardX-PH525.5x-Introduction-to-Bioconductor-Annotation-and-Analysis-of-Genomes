@@ -1,0 +1,66 @@
+```{r,eval=FALSE}
+BiocManager::install("parathyroidSE")
+```
+
+
+```{r}
+library(parathyroidSE)
+data(parathyroidGenesSE)
+se <- parathyroidGenesSE
+se
+
+```
+
+
+
+
+```{r}
+
+# assay contains results of the assay
+dim(se)
+assay(se)[1:3,1:3]
+dim(assay(se))    # rows = features (ranges), columns = samples
+
+```
+
+
+
+```{r}
+
+
+# colData contains sample information
+colData(se)[1:3,1:6]
+dim(colData(se))
+names(colData(se))
+colData(se)$treatment
+as.numeric(colData(se)$treatment)
+
+
+```
+
+
+
+```{r}
+
+# rowRanges contains feature information
+rowRanges(se)[1]
+class(rowRanges(se))
+length(rowRanges(se))    # number of genes
+length(rowRanges(se)[[1]])    # number of exons for first gene
+head(rownames(se))
+metadata(rowRanges(se))
+
+
+
+```
+
+
+
+
+```{r}
+
+# additional metadata, including sample information
+metadata(se)$MIAME
+abstract(metadata(se)$MIAME)
+```
+
