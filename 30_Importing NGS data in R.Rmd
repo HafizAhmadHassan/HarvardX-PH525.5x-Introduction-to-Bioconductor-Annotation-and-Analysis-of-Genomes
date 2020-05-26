@@ -1,0 +1,48 @@
+```{r}
+library(pasillaBamSubset)
+library(Rsamtools)
+filename <- untreated1_chr4
+```
+
+```{r}
+(bf <- BamFile(filename))
+```
+
+```{r}
+seqinfo(bf)
+```
+
+
+```{r}
+(sl <- seqlengths(bf))
+```
+
+```{r}
+quickBamFlagSummary(bf)
+```
+```{r}
+(gr <- GRanges("chr4",IRanges(1, sl["chr4"])))
+```
+
+```{r}
+start(ranges(gr))<-440000 
+```
+
+```{r}
+end(ranges(gr))<-470000
+```
+
+```{r}
+gr
+```
+```{r}
+countBam(bf, param=ScanBamParam(which = gr))
+```
+
+```{r}
+reads <- scanBam(BamFile(filename, yieldSize=5))
+```
+```{r}
+reads
+```
+

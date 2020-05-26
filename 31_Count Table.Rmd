@@ -1,0 +1,172 @@
+```{r}
+#https://rstudio-pubs-static.s3.amazonaws.com/107277_9dae587b13f04d599aa95dfd3ff7e422.html
+# libraries with BAM files and annotation
+library(pasillaBamSubset)
+library(TxDb.Dmelanogaster.UCSC.dm3.ensGene)
+txdb <- TxDb.Dmelanogaster.UCSC.dm3.ensGene
+
+grl <- exonsBy(txdb, by="gene")    # make GRangesList of exons for each gene
+grl[100]    # GRangesList of exons for 100th gene
+grl[[100]]    # GRanges with exons of 100th gene
+grl[[100]][1]    # first exon of 100th gene
+
+# paths to BAM files
+fl1 <- untreated1_chr4()
+fl2 <- untreated3_chr4()
+
+# libraries for importing BAM files
+library(Rsamtools)
+library(GenomicRanges)
+library(GenomicAlignments)
+
+# specify files with BamFileList
+fls <- BamFileList(c(fl1, fl2))
+names(fls) <- c("first","second")
+
+# find reads that overlap exons
+so1 <- summarizeOverlaps(features=grl,
+                         reads=fls,
+                         ignore.strand=TRUE)
+so1
+
+# examine count matrix
+head(assay(so1))
+colSums(assay(so1))
+
+# examine rest of SummarizedExperiment components
+rowRanges(so1)
+colData(so1)
+colData(so1)$sample <- c("one","two")    # add sample information
+colData(so1)
+metadata(rowRanges(so1)) 
+
+# exploratory data analysis of counts
+x <- assay(so1)[,1]
+hist(x[x > 0], col="grey")
+hist(x[x > 0 & x < 10000], col="grey")
+plot(assay(so1) + 1, log="xy")
+
+# count second file as paired-end reads
+# ?untreated3_chr4
+# ?summarizeOverlaps
+fls <- BamFileList(fl2)
+so2 <- summarizeOverlaps(features=grl,
+                         reads=fls,
+                         ignore.strand=TRUE,
+                         singleEnd=FALSE, 
+                         fragments=TRUE)
+colSums(assay(so2))
+colSums(assay(so1))
+
+# show there are half as many reads in so2 as so1
+plot(assay(so1)[,2], assay(so2)[,1], xlim=c(0,5000), ylim=c(0,5000),
+     xlab="single end counting", ylab="paired end counting")
+abline(0,1)
+abline(0,.5)
+```
+
+```{r}
+g <- genes(txdb)
+g <- g[seqnames(g) == "chr4"]
+```
+
+```{r}
+grl <- exonsBy(txdb, by="gene")
+grl <- grl[names(g)]
+```
+
+
+```{r}
+all.equal(names(g), names(grl))
+
+```
+
+
+```{r}
+library(Rsamtools)
+bf <- BamFile(untreated1_chr4())
+```
+
+
+
+```{r}
+so1 <- summarizeOverlaps(features=g,
+                         reads=bf,
+                        ignore.strand=TRUE)
+```
+
+
+
+
+```{r}
+so2 <- summarizeOverlaps(features=grl,
+                         reads=bf,
+                       ignore.strand=TRUE)
+```
+
+
+```{r}
+mean(assay(so2))/mean(assay(so1))
+```
+
+```{r}
+mean(assay(so2))/mean(assay(so1)[assay(so1)>0])
+```
+
+```{r}
+mean(assay(so2)/assay(so1)[assay(so1)>0])
+```
+
+```{r}
+x = assay(so1)[,1]
+y = assay(so2)[,1]
+mean ((y/x)[x>0]) 
+```
+Let's consider the single column count table obtained using the grl GRangesList above. Divide the counts in this table by the sum of counts to obtain the proportion of reads aligning to each read
+
+```{r}
+propy<-y/sum(y)
+```
+Now multiply these proportions by 1 million. This operation scales each column of the count table such that we get the number of reads expected if the sample were sequenced to have 1 million reads mapping to genes on chromosome 4.
+
+```{r}
+propym<-propy*1000000
+```
+
+
+```{r}
+head(propym,1)
+```
+
+```{r}
+summary((reduce(ranges(grl))))
+```
+
+```{r}
+mean(summary((reduce(ranges(grl))))
+[,2])
+```
+
+```{r}
+ebp = sum(width(reduce(grl)))
+ebp
+```
+```{r}
+head(fpm)
+```
+
+```{r}
+head(propym)
+```
+
+
+```{r}
+count = assay(so2)
+fpm = (count/sum(count)) * 1e6
+
+
+
+fpkm = (propym/ebp) * 1e3
+head(fpkm)
+```
+

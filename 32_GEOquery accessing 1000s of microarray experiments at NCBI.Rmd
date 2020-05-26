@@ -1,0 +1,85 @@
+Read this before anything
+
+http://genomicsclass.github.io/book/pages/dataman2017.html#geoquery
+
+
+```{r}
+library(GEOquery)
+glioMA = getGEO("GSE78703")[[1]]
+glioMA
+
+names(pData(glioMA))    # variable names
+glioMA$molecule_ch1    # molecule being assayed (RNA)
+table(glioMA$`treated with:ch1`, glioMA$`cell type:ch1`)    # experimental variables
+
+```
+# PArt 2 Read This
+
+http://genomicsclass.github.io/book/pages/bioc1_annoOverview.html#organismdb
+
+```{r,eval=FALSE}
+BiocManager::install("hgu133plus2.db")
+BiocManager::install("hgu133plus2probe")
+```
+
+
+```{r}
+library(hgu133plus2.db)
+hgu133plus2.db
+
+library(hgu133plus2probe)
+head(hgu133plus2probe)
+dim(hgu133plus2probe)
+
+
+select(hgu133plus2.db, keytype="PROBEID", 
+       columns=c("SYMBOL", "GENENAME", "PATH", "MAP"), keys="1007_s_at")
+```
+
+```{r}
+
+
+
+(unique(select(hgu133plus2.db, keytype="SYMBOL", 
+       columns=c("PROBEID", "GENENAME", "PATH", "MAP"), keys="EGFR")$PROBEID))
+
+```
+
+```{r}
+library(GO.db)
+
+
+```
+
+```{r}
+keytypes(GO.db)
+
+```
+
+```{r}
+columns(GO.db)
+
+```
+
+```{r}
+
+Gos<-select(GO.db, keytype="TERM", 
+       columns=c("GOID","DEFINITION","ONTOLOGY","TERM"),keys ="glial cell proliferation" )$GOID
+
+Gos
+```
+
+
+```{r}
+keytypes(hgu133plus2.db)
+```
+
+```{r}
+columns(hgu133plus2.db)
+```
+
+```{r}
+unique(select(hgu133plus2.db, keytype="GO", 
+       columns=c("PROBEID"), keys=Gos)$PROBEID)
+```
+
