@@ -1,0 +1,95 @@
+
+```{r,eval=FALSE}
+BiocManager::install("NGScopyData")
+```
+
+
+```{r}
+library(GEOquery)
+library(NGScopyData)
+library(Rsamtools)
+library(GenomicAlignments)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(AnnotationDbi)
+```
+
+
+```{r}
+
+
+mp = getGEO("GSE3725")[[1]]
+
+```
+How many samples are in lstem (the ExpressionSet obtained above)?
+```{r}
+nrow(pData(mp))
+```
+
+
+```{r}
+nrow(fData(mp))
+```
+
+
+
+```{r}
+mp <- mp[, !grepl("^GMP expressing", pData(mp)$title)]
+
+```
+
+
+
+```{r}
+titles <- as.character(pData(mp)$title)
+cell_type <- gsub(".*\\((.*?)( enriched)?\\).*", "\\1", titles)
+
+# add cell_type column to pData
+pData(mp)$cell_type <- factor(cell_type)
+```
+
+```{r}
+mp
+```
+```{r}
+head(exprs(mp))
+```
+
+
+```{r}
+select(mp, keytype="PROBEID", 
+       columns=c("SYMBOL", "GENENAME", "PATH", "MAP"), keys="1007_s_at")
+```
+
+
+
+```{r}
+F
+```
+
+
+```{r}
+which(fData(mp)$ID == "1421579_at")
+fData(mp)[5774,]
+```
+
+
+
+```{r}
+mean(exprs(mp)["1421579_at",])
+
+
+```
+```{r}
+
+
+rownames(pData(mp)[which(pData(mp)$cell_type == "L-GMP"),])
+
+```
+
+```{r}
+
+mean(exprs(mp)["1421579_at",rownames(pData(mp)[which(pData(mp)$cell_type == "L-GMP"),])
+])
+
+```
+
