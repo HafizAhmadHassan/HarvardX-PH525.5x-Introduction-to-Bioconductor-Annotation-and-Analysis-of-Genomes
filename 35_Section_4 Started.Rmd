@@ -1,0 +1,95 @@
+```{r}
+install.packages(c("R.utils",
+                   "png",
+                   "DT"))
+```
+
+```{r,eval=FALSE}
+BiocManager::install(c("BSgenome",
+                       "BSgenome.Hsapiens.UCSC.hg19.masked",
+                       "TxDb.Hsapiens.UCSC.hg19",
+                       "org.Hs.eg.db",
+                       "ensembldb",
+                       "EnsDb.Hsapiens.v75",
+                       "AnnotationHub",
+                       "rtracklayer",
+                       "TxDb.Hsapiens.UCSC.hg38.knownGene",
+                       "KEGGREST",
+                       "rols",
+                       "GSEABase"))
+```
+```{r}
+library(BSgenome)
+library(Biostrings)
+ag = available.genomes()
+grep("Scerev", ag, value=TRUE)
+grep("Hsap", ag, value=TRUE)
+
+# inspect the human genome
+library(BSgenome.Hsapiens.UCSC.hg19)
+Hsapiens
+length(Hsapiens)
+class(Hsapiens)
+methods(class="BSgenome")
+
+# inspect human genome
+Hsapiens$chrX
+substr(Hsapiens$chrX, 5e6, 5.1e6)
+nchar(Hsapiens$chrY)
+nchar(Hsapiens[[24]])
+sum(unlist(lapply(18:24,function(x) nchar(Hsapiens[[x]]))))
+```
+
+```{r}
+library(parallel)
+system.time(sum(unlist(lapply(18:24,function(x) nchar(Hsapiens[[24]])))))
+detectCores()
+
+```
+
+```{r}
+options(mc.cores=4)
+
+system.time(sum(unlist(mclapply(18:24,function(x) nchar(Hsapiens[[24]])))))
+
+```
+
+
+```{r}
+
+grep("zebrafish", ag, value=TRUE)
+
+```
+
+```{r}
+grep("masked",ag,TRUE)
+```
+```{r}
+grep("Drerio",ag,value = TRUE)
+
+
+```
+
+
+```{r}
+library(BSgenome.Hsapiens.UCSC.hg19.masked)
+
+```
+
+
+```{r}
+c17m = BSgenome.Hsapiens.UCSC.hg19.masked$chr17
+
+class(c17m)
+```
+
+
+```{r}
+c17m
+```
+
+
+```{r}
+BSgenome.Hsapiens.UCSC.hg19.masked$chr22
+```
+
